@@ -1,0 +1,23 @@
+<div class="{{ class }}">
+
+    <span>
+    {{ function('icon','star', 'text-2xl mb-2') }}
+    {{ function('icon','star', 'text-2xl mb-2') }}
+    {{ function('icon','star', 'text-2xl mb-2') }}
+    {{ function('icon','star', 'text-2xl mb-2') }}
+    </span>
+
+    {% if headline %}
+        <h3 class="font-display text-3xl text-noir mb-3">"{{ headline }}"</h3>
+    {% endif %}
+
+    {% if copy %}
+        <p class="text-md text-noir leading-relaxed mb-4">{{ copy }}</p>
+    {% endif %}
+
+    {% if name %}
+        <div class="mt-auto pt-2">
+            <span class="block text-lg text-secondary-blue">-- {{ name }}</span>
+        </div>
+    {% endif %}
+</div>

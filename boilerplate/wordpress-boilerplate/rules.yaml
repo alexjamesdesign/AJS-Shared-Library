@@ -1,0 +1,576 @@
+# WordPress Boilerplate - Coding Standards & Architecture Rules
+# This file defines the coding standards, architecture patterns, and conventions
+# used in this WordPress boilerplate with Timber, Twig, TailwindCSS, and ACF Blocks
+
+## Project Architecture
+
+### Theme Structure
+- **Functions**: All PHP functions are modular and stored in `_functions/` directory
+  - Each function file handles a specific concern (e.g., `Enqueue.php`, `Timber.php`, `GutenbergBlocks.php`)
+  - Functions are automatically loaded via `functions.php` using glob pattern
+  - Use descriptive PascalCase filenames for function files
+
+- **Views/Templates**: All Twig templates are in `_views/` directory
+  - `_views/_blocks/`: Gutenberg ACF blocks (twig files)
+  - `_views/_components/`: Reusable UI components
+  - `_views/_components/_atoms/`: Smallest reusable components (pagination, etc.)
+  - `_views/_layout/`: Layout templates (base.twig, header.twig, footer.twig)
+  - Root level templates: page.twig, single.twig, etc.
+
+- **Assets**: All frontend assets in `_assets/` directory
+  - `_assets/js/core/`: Core JavaScript files (loaded on all pages)
+  - `_assets/js/addon/`: Optional JavaScript files (conditionally loaded)
+  - `_assets/styles/`: CSS/TailwindCSS files
+  - `_assets/styles/partials/`: Modular CSS partials
+  - `_assets/images/`: Images and SVG sprite
+  - `_assets/fonts/`: Custom fonts
+
+- **Build Output**: Compiled assets go to `dist/` directory
+  - `dist/main.min.css`: Compiled and minified CSS
+  - `dist/production-dist.js`: Compiled and minified JavaScript
+
+### Technology Stack
+- **WordPress**: Core CMS
+- **Timber**: WordPress templating engine using Twig
+- **Twig**: Template language for views
+- **TailwindCSS v2**: Utility-first CSS framework with JIT mode
+- **ACF (Advanced Custom Fields)**: Custom fields and Gutenberg blocks
+- **Gulp**: Build tool for asset compilation
+- **Rollup**: JavaScript bundler
+- **PostCSS**: CSS processing with autoprefixer and cssnano
+
+## Coding Standards
+
+### PHP Standards
+
+#### Functions Organization
+- Create separate PHP files in `_functions/` for different concerns
+- Use modern PHP syntax with closures and anonymous functions
+- Wrap logic in WordPress action/filter hooks
+- Use `add_action()` and `add_filter()` with anonymous functions
+
+#### ACF Integration
+- **CRITICAL**: Always wrap `acf_add_options_page()` calls in `init` action hook
+  - This prevents translation loading errors
+  - ACF functions must run after WordPress and plugins are fully loaded
+  - Example:
+    ```php
+    add_action('init', function() {
+        if( function_exists('acf_add_options_page') ) {
+            acf_add_options_page(array(
+                'page_title' => 'Site Options',
+                'menu_title' => 'Site Options',
+                'menu_slug' => 'site-options',
+                'position' => 75,
+                'capability' => 'update_core',
+                'icon_url' => 'dashicons-hammer',
+                'redirect' => false
+            ));
+        }
+    });
+    ```
+
+#### Timber Setup
+- Timber views directory: `Timber::$dirname = array( '_views', '_components' );`
+- Extend `Timber\Site` class for theme setup
+- Add context via `addToContext()` method
+- Always include ACF options in context: `$context['options'] = function_exists('get_fields') ? get_fields('option') : array();`
+- Include menus in context: `$context['primaryMenu'] = new Timber\Menu('Primary Menu');`
+
+#### File Loading Pattern
+```php
+$files = ( defined( 'WP_DEBUG' ) AND WP_DEBUG ) ? glob( __DIR__ . '/_functions/*.php', GLOB_ERR ) : glob( __DIR__ . '/_functions/*.php' );
+foreach ( $files as $file ) : include $file; endforeach;
+```
+
+### Gutenberg Blocks (ACF + Timber)
+
+#### Block Creation Process
+1. Create a new `.twig` file in `_views/_blocks/`
+2. Add block header comment at the top:
+   ```twig
+   {#
+     Title: Block Name
+     Description: Description of the block
+     Category: formatting
+     Icon: cover-image
+     Keywords: keyword1 keyword2
+     Mode: edit
+     SupportsAlign: center
+     SupportsMode: false
+     SupportsMultiple: true
+   #}
+   ```
+3. Create ACF Field Group named "Block: Your Block Name"
+4. Assign fields to the block via ACF location rules
+5. Access fields in Twig using `{{ fields.field_name }}`
+
+#### Block Conventions
+- Use semantic HTML5 elements
+- Wrap blocks in outer containers with utility classes
+- Use `outer-container` class for full-width sections
+- Use `container` class for constrained content width
+- Add fade-in animations: `fade-in-viewport` class
+- Access ACF options: `{{ options.field_name }}`
+- Access post data: `{{ post.field_name }}`
+
+#### Block Filtering
+- All blocks are automatically registered from `_views/_blocks/*.twig`
+- Core Gutenberg blocks are disabled by default
+- Enable specific core blocks in `GutenbergBlocks.php` if needed
+
+### Twig/Timber Standards
+
+#### Template Inheritance
+- Use `{% extends '_layout/base.twig' %}` for page templates
+- Override blocks: `{% block content %}...{% endblock %}`
+- Include partials: `{% include '_components/component.twig' %}`
+
+#### Component Includes
+- Pass data explicitly using `with` and `only`:
+  ```twig
+  {% include '_components/button.twig' with {
+      style: 'filled',
+      text: 'Click Me',
+      link: '/page',
+      showIcon: true,
+      iconName: 'arrow-right'
+  } only %}
+  ```
+
+#### Accessing Data
+- ACF Fields: `{{ fields.field_name }}`
+- ACF Options: `{{ options.field_name }}`
+- Post Data: `{{ post.title }}`, `{{ post.content }}`
+- Timber Post: `{% set post_object = TimberPost(item.ID) %}`
+- Featured Image: `{{ featured_image }}`
+- WordPress Functions: `{{ function('function_name', arg1, arg2) }}`
+- Custom Functions: `{{ fn('icon', 'icon-name', 'classes') }}`
+
+#### Loops
+```twig
+{% for item in fields.repeater_field %}
+    {{ item.field_name }}
+    {{ loop.index }} {# 1-based index #}
+    {{ loop.first }} {# first iteration #}
+    {{ loop.last }} {# last iteration #}
+{% endfor %}
+```
+
+#### Conditionals
+```twig
+{% if fields.field_name %}
+    ...
+{% elseif other_condition %}
+    ...
+{% else %}
+    ...
+{% endif %}
+```
+
+### TailwindCSS Standards
+
+#### Configuration
+- JIT mode enabled for faster builds
+- Custom breakpoints: 2xs, xs, sm, md, lg, xl, 2xl, 3xl, 4xl
+- Custom color palette: primary, secondary, neutral
+- Custom font families: sans (Roboto), display (Oswald)
+- Purge content: `["./_views/**/*.twig", './safelist.txt']`
+- Container plugin disabled (custom container classes used)
+
+#### Utility Class Conventions
+- Use responsive prefixes: `lg:`, `md:`, `sm:`
+- Use state variants: `hover:`, `focus:`, `group-hover:`
+- Spacing: Use Tailwind's spacing scale (4, 6, 8, 12, 16, etc.)
+- Colors: Use theme colors (primary, secondary, neutral)
+- Typography: Use font-display for headings, font-sans for body
+
+#### Custom Classes
+- `.outer-container`: Full-width container
+- `.container`: Constrained content width
+- `.fade-in-viewport`: Intersection observer animation
+- `.fade-in-viewport-simple`: Simple fade-in animation
+- `.hero-fade-in-1`, `.hero-fade-in-2`, `.hero-fade-in-3`: Staggered animations
+
+#### Component Styling
+- Buttons: `rounded-full font-display font-bold uppercase py-3 px-10`
+- Cards: Use grid layouts with gap utilities
+- Responsive grids: `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3`
+
+### JavaScript Standards
+
+#### File Organization
+- **Core Scripts** (`_assets/js/core/`): Loaded on all pages
+  - Bundled into `production-dist.js`
+  - Use ES6 modules and classes
+  - Example: `slider.js` with Tiny Slider integration
+
+- **Addon Scripts** (`_assets/js/addon/`): Conditionally loaded
+  - Each file compiled separately
+  - Load via `wp_enqueue_script()` with page conditions
+
+#### JavaScript Patterns
+- Use ES6 classes for components
+- Export global initialization functions: `window.initCarousel = function() {...}`
+- Use vanilla JavaScript (no jQuery dependency for new code)
+- Event delegation for dynamic content
+- Debounce resize events (250ms)
+- Use passive event listeners for touch events
+
+#### Carousel/Slider Pattern
+- **Preferred Library**: Tiny Slider (https://github.com/ganlanyuan/tiny-slider)
+- Tiny Slider is a lightweight, vanilla JavaScript carousel library
+- Install via npm: `npm install tiny-slider`
+- Import in your JavaScript: `import { tns } from 'tiny-slider/src/tiny-slider'`
+
+```javascript
+// Example Tiny Slider initialization
+window.initCarousel = function(selector, options = {}) {
+    const elements = document.querySelectorAll(selector);
+    const carousels = [];
+    
+    elements.forEach(element => {
+        const slider = tns({
+            container: element,
+            items: options.mobile || 1,
+            slideBy: 'page',
+            autoplay: options.autoplay || false,
+            autoplayTimeout: options.autoplayDelay || 3000,
+            controls: options.controls !== false,
+            nav: options.nav !== false,
+            mouseDrag: true,
+            gutter: options.gap || 30,
+            responsive: {
+                640: {
+                    items: options.tablet || 2
+                },
+                1024: {
+                    items: options.desktop || 3
+                }
+            }
+        });
+        carousels.push(slider);
+    });
+    
+    return carousels;
+};
+```
+
+#### Initialization
+- Initialize components in `DOMContentLoaded` event
+- Initialize in base.twig or page-specific templates
+- Example with Tiny Slider:
+  ```javascript
+  document.addEventListener('DOMContentLoaded', function() {
+      if (document.querySelector('.carousel')) {
+          window.initCarousel('.carousel', {
+              mobile: 1,
+              tablet: 2,
+              desktop: 3,
+              gap: 20,
+              autoplay: true,
+              autoplayDelay: 3000,
+              controls: true,
+              nav: true
+          });
+      }
+  });
+  ```
+
+#### Tiny Slider CSS
+- Import Tiny Slider CSS in your main.css:
+  ```css
+  @import 'tiny-slider/dist/tiny-slider.css';
+  ```
+- Customize controls and navigation with your own CSS
+- Use Tailwind utilities to style carousel elements
+
+### CSS/Styles Standards
+
+#### File Structure
+- `main.css`: Main entry point
+- Import order:
+  1. Tailwind base
+  2. Tailwind components
+  3. Custom partials
+  4. Tailwind utilities
+  5. Custom CSS
+
+#### Partials Organization
+- `core.css`: Core styles, containers, utilities
+- `buttons.css`: Button styles
+- `desktop-nav.css`: Desktop navigation
+- `mobile-nav.css`: Mobile navigation
+- `forms.css`: Form styles
+- `typography.css`: Typography styles
+- `transitions.css`: Animation and transition styles
+- `cookies.css`: Cookie banner styles
+
+#### Custom CSS
+- Use PostCSS nested syntax
+- Use CSS variables for repeated values
+- Scope styles to specific components
+- Avoid !important unless absolutely necessary
+
+### Icon System
+
+#### SVG Sprite
+- Icons stored in `_assets/images/icons-sprite.svg`
+- Access via `icon()` function in Twig
+- Usage: `{{ function('icon', 'icon-name', 'text-xl text-primary') }}`
+
+#### Icon Function
+```php
+function icon($iconName, $classes = null) {
+    echo '<svg class="icon icon-'.$iconName.' '.$classes.'"><use href="'.get_stylesheet_directory_uri().'/_assets/images/icons-sprite.svg#icon-'.$iconName.'"></use></svg>';
+}
+```
+
+## Build Process
+
+### Development Workflow
+1. Run `npm run dev` to start development server
+2. Gulp watches for changes in:
+   - `_assets/styles/**/*.css`
+   - `_views/**/*.twig`
+   - `_assets/js/core/*.js`
+   - `_assets/js/addon/*.js`
+3. BrowserSync proxies local WordPress site
+4. Auto-reload on file changes
+
+### Production Build
+1. Run `npm run build` to create production assets
+2. CSS is minified with cssnano
+3. JavaScript is minified with terser
+4. Autoprefixer adds vendor prefixes
+5. TailwindCSS purges unused styles
+
+### Gulp Tasks
+- `gulp styles`: Compile CSS
+- `gulp core-scripts`: Bundle core JavaScript
+- `gulp watch`: Watch for file changes
+- `gulp serve`: Start BrowserSync
+- `gulp build`: Production build
+
+## WordPress Configuration
+
+### Theme Setup
+- Hide admin bar: `show_admin_bar(false)`
+- Enable title tag support
+- Enable post thumbnails
+- Enable HTML5 markup
+- Allow SVG uploads
+- Disable comments completely
+- Remove WordPress version from feeds
+
+### Enqueue Scripts
+- Use file modification time for cache busting
+- Enqueue scripts in footer: `wp_enqueue_script('production', ..., true)`
+- Localize theme URL: `wp_localize_script('production', 'themeURL', ...)`
+- Conditional loading for page-specific scripts
+
+### Menus
+- Register menus in `RegisterNavigations.php`
+- Access in Twig: `{{ primaryMenu.items }}`
+- Common menus: Primary, Secondary, Footer, Areas
+
+### Custom Post Types
+- Define in `CPT.php`
+- Use WordPress `register_post_type()` function
+- Follow WordPress naming conventions
+
+### Taxonomies
+- Define in `Taxonomies.php`
+- Use WordPress `register_taxonomy()` function
+
+## Component Library
+
+### Button Component
+- File: `_views/_components/button.twig`
+- Props:
+  - `style`: 'filled', 'outline-yellow', 'outline-blue'
+  - `text`: Button text
+  - `link`: URL
+  - `showIcon`: Boolean
+  - `iconName`: Icon identifier
+  - `target`: Link target (_blank, etc.)
+  - `extraClasses`: Additional CSS classes
+
+### Picture Component
+- File: `_views/_components/picture.twig`
+- Responsive images with multiple breakpoints
+- Props:
+  - `source`: Image source
+  - `lazyload`: Boolean
+  - `breakpoints`: Object with responsive sizes
+  - `img`: Image properties (classes, width, height, crop, alt)
+
+### Card Components
+- `card.twig`: Generic card
+- `blog-card.twig`: Blog post card
+- `course-card.twig`: Course card
+- `gallery-card.twig`: Gallery item
+- `testimonials-card.twig`: Testimonial card
+
+## Best Practices
+
+### Performance
+- Lazy load images below the fold
+- Use responsive images with srcset
+- Minify and concatenate assets
+- Use cache busting with file modification times
+- Inline critical CSS in base.twig
+- Defer non-critical JavaScript
+
+### Accessibility
+- Use semantic HTML elements
+- Add ARIA labels to interactive elements
+- Ensure keyboard navigation works
+- Use sufficient color contrast
+- Add alt text to images
+
+### SEO
+- Use Yoast SEO plugin
+- Add schema markup in `_layout/schema.twig`
+- Add meta tags via ACF options
+- Add noindex to staging sites
+- Use proper heading hierarchy
+
+### Security
+- Sanitize user inputs
+- Escape outputs
+- Use nonces for forms
+- Keep WordPress and plugins updated
+- Use environment variables for sensitive data
+
+### Code Quality
+- Use consistent indentation (tabs for PHP, spaces for JS/CSS)
+- Add comments for complex logic
+- Use descriptive variable and function names
+- Follow WordPress coding standards for PHP
+- Use ESLint for JavaScript
+- Use Prettier for code formatting
+
+## Common Patterns
+
+### Creating a New Block
+1. Create `_views/_blocks/my-block.twig`
+2. Add block header comment
+3. Create ACF Field Group "Block: My Block"
+4. Add fields and assign to block
+5. Code the block template
+6. Test in Gutenberg editor
+
+### Creating a New Component
+1. Create `_views/_components/my-component.twig`
+2. Define component props at the top
+3. Use `with {...} only` when including
+4. Make components reusable and flexible
+5. Document props in comments
+
+### Adding a New JavaScript Module
+1. Create file in `_assets/js/core/` or `_assets/js/addon/`
+2. Use ES6 class pattern
+3. Export initialization function to window
+4. Initialize in base.twig or page template
+5. Test across devices and browsers
+
+### Adding Custom Styles
+1. Create partial in `_assets/styles/partials/`
+2. Import in `main.css`
+3. Use PostCSS nested syntax
+4. Prefer Tailwind utilities over custom CSS
+5. Use CSS variables for theme values
+
+## Environment Setup
+
+### Required Software
+- Node.js (for npm and build tools)
+- Composer (for PHP dependencies)
+- Local WordPress environment (Local, MAMP, Docker, etc.)
+
+### Installation Steps
+1. Clone theme to `wp-content/themes/`
+2. Run `npm install` to install Node dependencies
+3. Run `composer install` to install PHP dependencies
+4. Update `gulpfile.js` proxy URL to match local site
+5. Run `npm run dev` to start development
+
+### Required Plugins
+- Advanced Custom Fields Pro
+- Timber (installed via Composer)
+- Yoast SEO (recommended)
+
+## Naming Conventions
+
+### Files
+- PHP files: PascalCase (e.g., `BoilerplateReset.php`)
+- Twig files: kebab-case (e.g., `service-cards.twig`)
+- JavaScript files: kebab-case (e.g., `slider.js`)
+- CSS files: kebab-case (e.g., `desktop-nav.css`)
+
+### Classes
+- PHP classes: PascalCase (e.g., `newSite`)
+- JavaScript classes: PascalCase (e.g., `CustomComponent`)
+- CSS classes: kebab-case with BEM when needed
+- Tiny Slider classes: Use default `.tns-*` classes or customize
+
+### Variables
+- PHP: snake_case (e.g., `$timber_post`)
+- JavaScript: camelCase (e.g., `currentIndex`)
+- Twig: snake_case (e.g., `{{ post_object }}`)
+
+### Functions
+- PHP: snake_case (e.g., `address_stacked()`)
+- JavaScript: camelCase (e.g., `initCarousel()`)
+
+## Git Workflow
+
+### Ignored Files
+- `node_modules/`
+- `vendor/`
+- `dist/`
+- `.DS_Store`
+- `.env`
+
+### Commit Messages
+- Use descriptive commit messages
+- Start with verb (Add, Fix, Update, Remove)
+- Reference issue numbers when applicable
+
+## Deployment
+
+### Pre-deployment Checklist
+- Run `npm run build` for production assets
+- Test all pages and blocks
+- Check responsive design
+- Verify forms work
+- Test on multiple browsers
+- Check console for errors
+- Verify analytics tracking
+- Update ACF JSON exports
+
+### Staging Sites
+- Auto-noindex for `.adtrak.agency` and `breeez.agency` domains
+- Test thoroughly before production deploy
+
+## Troubleshooting
+
+### Common Issues
+- **ACF translation errors**: Ensure ACF functions are in `init` hook
+- **Timber not found**: Run `composer install`
+- **Styles not updating**: Clear browser cache and rebuild
+- **JavaScript errors**: Check console and verify initialization
+- **Blocks not showing**: Check ACF field group location rules
+
+### Debug Mode
+- Enable `WP_DEBUG` in `wp-config.php`
+- Check error logs
+- Use browser dev tools
+- Test with GLOB_ERR flag in file loading
+
+## Additional Resources
+- Timber Documentation: https://timber.github.io/docs/
+- ACF Gutenberg Blocks: https://palmiak.github.io/timber-acf-wp-blocks/
+- TailwindCSS: https://tailwindcss.com/docs
+- WordPress Coding Standards: https://developer.wordpress.org/coding-standards/

@@ -1,0 +1,33 @@
+/* Ensure Tiny Slider dots are visible and styled */
+.gallery-slider .tns-nav {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 35px;
+  }
+  .gallery-slider .tns-nav button {
+    width: 8px;
+    height: 8px;
+    border-radius: 9999px;
+    background: #94a3b8; /* slate-400 */
+  }
+  .gallery-slider .tns-nav .tns-nav-active {
+    background: #27282C; /* secondary-blue */
+  }
+
+/* Reviews slider dots styling mirrors gallery */
+.reviews-slider .tns-nav {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 12px;
+}
+.reviews-slider .tns-nav button {
+    width: 8px;
+    height: 8px;
+    border-radius: 9999px;
+    background: #94a3b8; /* slate-400 */
+}
+.reviews-slider .tns-nav .tns-nav-active {
+    background: #27282C; /* secondary-blue */
+}

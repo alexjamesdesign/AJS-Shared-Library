@@ -1,0 +1,161 @@
+<header class="bg-grey-light rounded-b-3xl fixed w-full top-0 left-0 z-[999] {{ options.show_banner == false ? 'border-t-8 lg:border-t-12 border-solid border-brown' }}">
+	{% if options.show_banner %}
+		<a href="{{ options.banner.link.url }}" class="px-4 py-1 w-full block text-center font-semibold hover:opacity-80" style="background:{{ options.banner.background_colour }};color:{{ options.banner.text_colour }}">
+			{{ options.banner.text }} 
+			{% if options.banner.link %}{{ fn('icon','caret-right') }}{% endif %}
+		</a>
+	{% endif %}
+
+	<div class="container flex items-center justify-between py-5 lg:pb-0">
+
+		<a aria-label="Go to homepage" class="block lg:inline-block min-w-36 md:max-w-32 xl:min-w-48 3xl:min-w-56" href="{{site.site_url}}">
+			<img class="mx-auto md:mx-0 max-w-36 md:max-w-32 xl:max-w-48 3xl:max-w-56 lg:pb-5" src="{{ theme.link }}/_assets/images/browns-logo.svg" alt="{{site.title}} Logo" width="224px" height="98px" />
+		</a>
+
+		<div class="flex flex-wrap items-center lg:hidden ml-auto mobile-nav-container">
+			<div data-toggle-search class="bg-grey w-8 h-8 md:hidden flex items-center justify-center rounded-full mr-2">
+				{{ fn('icon','search','h-3 w-3 active') }}
+				{{ fn('icon','times','h-3 w-3') }}
+			</div>
+			<div class="absolute top-full mt-[10px] left-1/2 transform -translate-x-1/2 bg-grey rounded-3xl z-[999] py-4 px-6 max-w-full w-[320px] sm:w-[540px] md:hidden" data-search>
+				<span class="font-medium block mb-2">Search our website</span>
+				{% include "_atoms/search-form.twig" with {
+					id: '-mob'
+				} %}
+			</div>
+
+			<button title="Toggle Mobile Menu" class="flex items-center justify-center p-2 text-center" data-mobile-menu-toggle>
+				{{ function('icon', 'bars', 'w-5 h-5') }}
+				<span class="sr-only">Menu</span>
+			</button>
+		</div>
+
+		<div class="main-nav lg:w-full hidden md:flex flex-col ml-2 lg:ml-0 xl:ml-4 2xl:ml-8">
+			<div class="w-full flex flex-wrap justify-between items-center ">
+				<div class="flex flex-wrap justify-between items-center">
+					<nav id="menu-secondary" class="menu hidden lg:block" aria-labelledby="secondary-navigation">
+						<span class="sr-only" id="secondary-navigation">Secondary Navigation</span>
+						<ul class="flex flex-wrap justify-center w-full menu-secondary menu-secondary-js">
+							{% for item in secondaryMenu.items %}
+								<li class="{{item.class}}">
+									<a href="{{item.link}}" class="{{ not loop.first ? 'pl-1 xl:pl-2' }} {{ not loop.last ? 'pr-1 xl:pr-2' }} relative text-grey-dark text-xs block hover:underline focus:underline">
+										{{item.name}}
+										{% if item.children %}{{ fn('icon','caret-down','w-3 h-3') }}{% endif %}
+									</a>
+									{% if item.children %}
+										<ul class="sub-menu py-1 rounded-3xl border-t-4 border-brown">
+											{% for child in item.children %}
+												<li class="{{child.class}}">
+													<a class="block py-2.5 px-4 text-grey-dark text-sm hover:underline focus:underline" href="{{child.link}}">{{child.name}}</a>
+												</li>
+											{% endfor %}
+										</ul>
+									{% endif %}
+								</li>
+							{% endfor %}
+						</ul>
+					</nav>
+					{# Search #}
+					<div class="relative lg:ml-1 xl:ml-2">
+						<div data-toggle-search class="bg-grey w-8 h-8 flex items-center justify-center rounded-full cursor-pointer">
+							{{ fn('icon','search','h-3 w-3 lg:h-2.5 lg:w-2.5 xl:h-3 xl:w-3 active') }}
+							{{ fn('icon','times','h-3 w-3 lg:h-2.5 lg:w-2.5 xl:h-3 xl:w-3') }}
+						</div>
+						<div class="absolute top-full mt-[10px] left-1/2 transform -translate-x-1/2 bg-grey rounded-3xl z-[999] py-4 px-6 w-[320px] sm:w-[540px]" data-search>
+							<span class="font-medium block mb-2">Search our website</span>
+							{% include "_atoms/search-form.twig" %}
+						</div>
+					</div>
+				</div>
+
+				<div class="flex flex-wrap justify-between items-center">
+					<div class="mx-2 xl:mx-4">
+						{% include "_atoms/call-tag.twig" with {
+							phone_classes: 'lg:text-base xl:text-lg',
+							icon_classes: 'text-base lg:text-sm xl:text-base'
+						} %}
+					</div>
+
+					<div class="flex flex-wrap items-center">
+						{% include "_atoms/button.twig" with {
+							link: '/waste-management/commercial-quote-builder/',
+							text: 'Get a Quote',
+							colour: 'orange',
+							classes: 'mr-1 xl:mr-2 text-xs xl:text-base',
+						} %}
+						{% include "_atoms/button.twig" with {
+							link: '/skip-hire/domestic-skip-hire/book-a-skip/',
+							text: 'Hire a Skip',
+							colour: 'yellow',
+							classes: 'mr-1 xl:mr-2 text-xs xl:text-base',
+						} %}
+						{% include "_atoms/button.twig" with {
+							link: '/trade-customer-portal/',
+							text: 'Login',
+							colour: 'brown',
+							classes: 'text-xs xl:text-base',
+                			target: '_blank'
+						} %}
+					</div>
+				</div>
+			</div>
+			<div class="w-full flex-wrap justify-between lg:mt-2 hidden lg:flex">
+				<nav id="menu-primary" class="w-full menu hidden lg:block" aria-labelledby="primary-navigation">
+					<span class="sr-only" id="primary-navigation">Primary Navigation</span>
+					<ul class="flex flex-wrap justify-between w-full menu-primary">
+						{% for item in primaryMenu.items %}
+							<li class="{{ item.class }} group {{ 'bucket-link' in (item.children|last).class ? '' : 'relative' }}">
+								{% set itemPost = Post(item._menu_item_object_id) %}
+								{% set itemColour = itemPost.meta('page_colour')|default('brown') %}
+								<a href="{{ item.link }}" class="main-menu-item {{ not loop.first and loop.index != 2 ? 'pl-1.5 xl:pl-2' }} {{ not loop.last ? 'pr-1.5 xl:pr-2' }} pb-5 relative block font-medium text-sm xl:text-base hover:underline focus:underline {{ itemColour ? 'hover:text-' ~ itemColour : 'hover:text-brown' }} {% if item.current or item.current_item_parent or item.current_item_ancestor %}{{ itemColour ? 'text-' ~ itemColour : 'text-brown' }}{% endif %}">
+									{{ item.name }}
+									{% if item.children %}{{ fn('icon','caret-down','group-hover:text-' ~ itemColour) }}{% endif %}
+								</a>
+								{% if item.children %}
+									<ul class="sub-menu border-t-4 border-solid border-{{ itemColour }} rounded-3xl p-6 xl:p-8 {{ 'bucket-link' in (item.children|last).class ? 'w-full left-0' : 'w-[300px] left-1/2 transform -translate-x-1/2' }}">
+										<div class="w-full flex flex-wrap">
+											<div class="{{ 'bucket-link' in (item.children|last).class ? 'w-1/4' : 'w-full' }}">
+												<a href="{{ item.link }}" class="block font-semibold text-{{ itemColour }} mb-2 hover:underline focus:underline text-base xl:text-lg">{{ item.name }}</a>
+												{% for child in item.children %}
+													{% if 'bucket-link' not in  child.class %}
+														<li class="{{ child.class }} border-l border-solid border-{{ itemColour }} pl-4 py-1">
+															<a href="{{ child.link }}" class="block py-0.5 text-sm xl:text-base hover:underline focus:underline {{ itemColour ? 'hover:text-' ~ itemColour : 'hover:text-brown' }} {% if child.current or child.current_item_parent or child.current_item_ancestor %}{{ itemColour ? 'text-' ~ itemColour : 'text-brown' }}{% endif %}">{{child.name}}</a>
+															{% if child.children %}
+																<ul class="mt-1">
+																	{% for infant in child.children %}
+																		<li class="{{ infant.class }} border-l border-solid border-{{ itemColour }} pl-4 py-0.5">
+																			<a href="{{ infant.link }}" class="block text-sm xl:text-base hover:underline focus:underline {{ itemColour ? 'hover:text-' ~ itemColour : 'hover:text-brown' }} {% if infant.current or infant.current_item_parent or infant.current_item_ancestor %}{{ itemColour ? 'text-' ~ itemColour : 'text-brown' }}{% endif %}">{{infant.name}}</a>
+																		</li>
+																	{% endfor %}
+																</ul>
+															{% endif %}
+														</li>
+													{% endif %}
+												{% endfor %}
+											</div>
+											{% if 'bucket-link' in (item.children|last).class %}
+												<div class="w-3/4 flex flex-wrap justify-end">
+													{% for child in item.children %}
+														{% if 'bucket-link' in  child.class %}
+															<div class="w-1/3 px-4">
+																{% include "_atoms/bucket.twig" with {
+																	post: Post(child._menu_item_object_id)
+																} %}
+															</div>
+														{% endif %}
+													{% endfor %}
+												</div>
+											{% endif %}
+										</div>
+									</ul>
+								{% endif %}
+							</li>
+						{% endfor %}
+					</ul>
+				</nav>
+			</div>
+		</div>
+
+	</div>
+
+</header>
