@@ -7,17 +7,35 @@ Example: “A full-width hero banner with heading, text, and optional background
 
 ### 📁 Structure
 ```
-_views/
-└─ _blocks/
-   └─ [block-name].twig           ← main block structure
-_atoms/
-└─ [related-atom].twig            ← optional component partials (cards, items, etc.)
 _assets/
-└─ js/
-   └─ core/
-      └─ [block-name].js          ← optional JS logic (e.g. slider init)
+├─ fonts/                              ← Custom theme fonts
+├─ images/
+│  └─ icons-sprite.svg                 ← SVG sprite sheet
+├─ js/
+│  ├─ core/
+│  │  └─ run.js                        ← Main JS entry point (global scripts)
+│  └─ addon/
+│     └─ README.md                     ← Notes for optional JS addons
+└─ styles/
+   ├─ main.css                         ← Compiled CSS output
+   └─ partials/                        ← SCSS/CSS partials
+
+_functions/                            ← Theme functionality (custom PHP classes)
+
+_views/
+├─ 404.twig                            ← Error page template
+├─ index.twig                          ← Main index template
+├─ page.twig                           ← Static page template
+├─ single.twig                         ← Single post template
+├─ _layout/
+│  └─ (header, footer, base, etc.)     ← Global layout wrappers
+├─ _components/                        ← Reusable partials (logos, social links, etc.)
+│  └─ [related-atom].twig              ← optional component partials (cards, items, etc.)
+└─ _blocks/                            ← ACF block templates
+  └─ [block-name].twig                  ← main block structure for this component
+
 acf/
-└─ acf-export-[block-name].json   ← optional ACF field export for reuse
+└─ acf-export-[block-name].json         ← optional ACF field export for reuse
 ```
 
 ---

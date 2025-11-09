@@ -39,6 +39,29 @@
 - **Rollup**: JavaScript bundler
 - **PostCSS**: CSS processing with autoprefixer and cssnano
 
+## Build Process
+- id: build-system
+  description: >
+    The theme uses a custom Gulp 4 build pipeline to compile, bundle, and optimize assets.
+    All CSS and JS are built through this system before being output to the /dist directory.
+
+  rules:
+    - The gulpfile is located in the theme root at gulpfile.js.
+    - TailwindCSS and PostCSS handle all CSS compilation and processing.
+    - Rollup handles JS bundling, with separate entry points for /core/ and /addon/ scripts.
+    - Run `gulp` for development with live reload, or `gulp build --production` for production output.
+    - CSS source: `_assets/styles/main.css`
+    - JS sources:
+        - `_assets/js/core/*.js` → bundled into `dist/production-dist.js`
+        - `_assets/js/addon/*.js` → each bundled separately (e.g., `dist/production-[name].js`)
+    - Output directory: `dist/`
+    - BrowserSync proxy defaults to `project.test` and reloads on Twig/PHP/CSS/JS file changes.
+    - All asset paths in the WordPress enqueue functions should reference `/dist/` and use filemtime() for cache busting.
+
+  notes: >
+    Use the `gulpfile-readme.md` in the theme root for detailed documentation of each task.
+
+
 ## Coding Standards
 
 ### PHP Standards
@@ -218,7 +241,7 @@ foreach ( $files as $file ) : include $file; endforeach;
 - Use passive event listeners for touch events
 
 #### Carousel/Slider Pattern
-- **Preferred Library**: Tiny Slider (https://github.com/ganlanyuan/tiny-slider)
+- **Preferred Library**: 
 - Tiny Slider is a lightweight, vanilla JavaScript carousel library
 - Install via npm: `npm install tiny-slider`
 - Import in your JavaScript: `import { tns } from 'tiny-slider/src/tiny-slider'`

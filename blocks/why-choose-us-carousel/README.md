@@ -19,6 +19,33 @@ acf/
 └─ acf-export-why-choose-us.json   ← optional ACF field export for reuse
 ```
 
+```
+_assets/
+├─ fonts/                              ← Custom theme fonts
+├─ images/
+│  └─ icons-sprite.svg                 ← SVG sprite sheet
+├─ js/
+│  ├─ core/
+│  │  └─ tiny-slider-init.js           ← JS for Tiny Slider
+│  └─ addon/
+│     └─ README.md                     ← Notes for optional JS addons
+└─ styles/
+   ├─ main.css                         ← Compiled CSS output
+   └─ partials/                        ← SCSS/CSS partials
+
+_functions/                            ← Theme functionality (custom PHP classes)
+
+_views/
+├─ 404.twig                            ← Error page template
+├─ index.twig                          ← Main index template
+├─ page.twig                           ← Static page template
+├─ single.twig                         ← Single post template
+├─ _layout/
+│  └─ (header, footer, base, etc.)     ← Global layout wrappers
+├─ _components/                        ← Reusable partials (logos, social links, etc.)
+└─ _blocks/                            ← ACF block templates
+```
+
 ---
 
 ### 🧩 Twig Usage

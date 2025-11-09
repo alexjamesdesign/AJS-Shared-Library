@@ -1,13 +1,11 @@
-// binds $ to jquery, requires you to write strict code. Will fail validation if it doesn't match requirements.
+// Tiny Slider Initialization
 (function ($) {
 	"use strict";
 
-	// add all of your code within here, not above or below
 	$(function () {
-		// Services Slider (Tiny Slider)
 		if (typeof window.tns !== 'undefined') {
 
-			// Why Us Slider (Tiny Slider)
+			// Why Us Slider
 			var $whyUsWrappers = $('.js-why-us-slider');
 			$whyUsWrappers.each(function () {
 				var $wrapper = $(this);
@@ -35,7 +33,6 @@
 				});
 			});
 		}
-
 	});
 
 }(jQuery));
