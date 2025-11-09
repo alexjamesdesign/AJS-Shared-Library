@@ -1,0 +1,23 @@
+{% if options.why_choose_us %}
+
+	<div class="overflow-hidden py-6 -mx-2">
+		
+		<div class="js-why-us-slider">
+
+			{% for item in options.why_choose_us %}
+
+			<div class="px-2">
+				<div class="flex justify-center items-center my-0 w-full text-primary">
+					
+					{{ function('icon', item.icon|default('truck'), "text-4xl text-primary mr-2") }}
+					<span class="text-sm">{{item.reason}}</span>
+
+				</div>
+			</div>
+
+			{% endfor %}
+
+		</div>
+	</div>
+
+{% endif %}
