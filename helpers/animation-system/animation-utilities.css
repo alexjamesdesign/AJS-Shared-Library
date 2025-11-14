@@ -1,0 +1,40 @@
+/***********************************************************
+Core animation classes
+************************************/
+
+/*! purgecss start ignore */
+
+@keyframes fadeIn {
+    0% { @apply opacity-0; transform: translateY(50px); }
+    100% { @apply opacity-100; transform: translateY(0); }
+}
+
+.animate {
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+    @apply opacity-0 transition-all;
+}
+
+.animate.animated.fadeIn {
+    animation-name: fadeIn;
+}
+
+.animate-fade {
+    @apply opacity-0;
+}
+
+.delay-1 { animation-delay: .1s; }
+.delay-2 { animation-delay: .2s; }
+.delay-3 { animation-delay: .3s; }
+.delay-4 { animation-delay: .4s; }
+.delay-5 { animation-delay: .5s; }
+.delay-6 { animation-delay: .6s; }
+.delay-7 { animation-delay: .7s; }
+.delay-8 { animation-delay: .8s; }
+.delay-9 { animation-delay: .9s; }
+.delay-10 { animation-delay: 1s; }
+.delay-11 { animation-delay: 1.1s; }
+.delay-12 { animation-delay: 1.2s; }
+.delay-80 { animation-delay: 8s; }
+
+/*! purgecss end ignore */
