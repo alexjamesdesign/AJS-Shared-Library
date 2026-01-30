@@ -7,17 +7,24 @@ Pulls testimonial data from an **ACF repeater** in the global Site Options.
 
 ### 📁 Structure
 ```
-_views/
-└─ _blocks/
-   └─ reviews.twig              ← main block template (carousel markup)
-_atoms/
-└─ reviews-card.twig            ← individual review card template
 _assets/
-└─ js/
-   └─ core/
-      └─ run.js                 ← contains Tiny Slider initialization
-acf/
-└─ acf-export-site-options-reviews.json  ← ACF field export for reviews data
+├─ images/
+├─ js/
+│  └─ core/
+│     └─ run.js                        ← contains Tiny Slider initialization
+└─ styles/
+   └─ tiny-slider.css                  ← Tiny Slider styles
+
+_functions/
+└─ index.php                           ← PHP initialization (optional)
+
+_views/
+├─ _blocks/
+│  └─ reviews-carousel.twig            ← main block template (carousel markup)
+├─ _components/
+│  └─ review-card.twig                 ← individual review card template
+└─ _atoms/
+   └─ block_settings.twig              ← standard block settings macros
 ```
 
 ---
@@ -69,11 +76,11 @@ Make sure this function is called on DOM load within your global JS entry (e.g. 
 Include this block in any template or flexible content area:
 
 ```twig
-{% include '_blocks/reviews.twig' %}
+{% include '_blocks/reviews-carousel.twig' %}
 ```
 
 The block loops through `options.reviews` from the Site Options ACF group.  
-Each repeater item renders a `reviews-card.twig` partial with testimonial data.
+Each repeater item renders a `review-card.twig` partial with testimonial data.
 
 ---
 
@@ -129,20 +136,19 @@ Import this JSON into ACF on new projects to instantly recreate the data structu
 - **Accessibility:**  
   Include `aria-label="Reviews carousel"` on your wrapper for better screen reader support.
 - **Performance:**  
-  Lazy-load images in `reviews-card.twig` for better Lighthouse scores.
+  Lazy-load images in `review-card.twig` for better Lighthouse scores.
 
 ---
 
-✅ **Example Output**
+### ✅ Example Output
 
 ```twig
 <section class="reviews-slider">
   <div class="my-slider">
     {% for review in options.reviews %}
-      {% include '_atoms/reviews-card.twig' with { review: review } %}
+      {% include '_components/review-card.twig' with { review: review } %}
     {% endfor %}
   </div>
   <div class="tns-controls-custom"></div>
 </section>
 ```
-S

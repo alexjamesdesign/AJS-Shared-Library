@@ -28,7 +28,7 @@
             <div class="my-slider">
                 {% for review in reviews %}
                     <div class="px-2">
-                        {% include "_atoms/review-card.twig" with {
+                        {% include "_components/review-card.twig" with {
                             headline: review.review_headline,
                             copy: review.review_copy,
                             name: review.review_name,
