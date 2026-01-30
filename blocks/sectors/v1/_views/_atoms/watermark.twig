@@ -1,0 +1,31 @@
+{#
+Watermark Atom
+Usage: {% include "_atoms/watermark.twig" with { fields: fields } %}
+#}
+{% if fields.watermark %}
+{% set pos = fields.watermark_position|default('bottom_right') %}
+{% set pos_map = {
+'top_left': 'top-0 left-0 -translate-x-1/4',
+'center_left': 'top-1/2 left-0 -translate-x-1/4 -translate-y-1/2',
+'bottom_left': 'bottom-0 left-0 -translate-x-1/4',
+'top_right': 'top-0 right-0 translate-x-1/4',
+'center_right': 'top-1/2 right-0 translate-x-1/4 -translate-y-1/2',
+'bottom_right': 'bottom-0 right-0 translate-x-1/4'
+} %}
+
+<div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+    <div class="absolute {{ pos_map[pos] }} select-none">
+        <div class="js-parallax-watermark" data-parallax-speed="0.2" style="margin-top: -200px;">
+        {% include "_components/picture.twig" with {
+        source: fields.watermark.url,
+        lazyload: false,
+        pictureClasses: 'block',
+        img: {
+        classes: "max-w-none",
+        alt: '',
+        }
+        } %}
+        </div>
+    </div>
+</div>
+{% endif %}

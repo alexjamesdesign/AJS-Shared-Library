@@ -1,0 +1,47 @@
+{# Import settings macros #}
+{% import "_atoms/block_settings.twig" as settings %}
+
+<section class="container {{ spacingTop }} {{ settings.bg_class(fields.background_colour) }} {{ settings.rounded_classes(fields.rounded_top, fields.rounded_bottom) }}">
+    <div class="flex flex-wrap items-center">
+        {# CTA Copy and Button #}
+        <div class="w-full lg:w-1/4 flex flex-col items-start lg:pr-8 lg:pb-8">
+            <span class="text-2xl lg:text-3xl font-semibold leading-tight">{{ fields.sectors_title }}</span>
+            <span class="text-base mt-3 block">{{ fields.sectors_copy }}</span>
+            {% include "_atoms/button.twig" with {
+                link: fields.sectors_button.url,
+                text: fields.sectors_button.title,
+                colour: 'purple',
+                classes: 'mt-6 hidden lg:inline-block',
+            } %}
+        </div>
+
+        {# Carousel #}
+        {% set cards = fields.cards ?: function('get_field', 'cards') %}
+        {% if cards and cards|length %}
+            <div class="w-full mt-4 lg:mt-0 lg:w-3/4 lg:pl-8">
+                <div class="-mx-2">
+                    <div class="js-sectors-slider">
+                        {% for card in cards %}
+                            {% set post_object = TimberPost(card.ID) %}
+                            <div class="px-2">
+                                {% include "_atoms/card.twig" with { post: post_object } %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="px-2 mt-4 flex justify-end w-full pointer-events-none tns-controls-sectors tns-controls">
+                    <button type="button" data-controls="prev" tabindex="-1" aria-label="prev" class="flex items-center justify-center w-6 h-6 rounded text-black transition pointer-events-auto bg-grey">{{ function('icon','caret-left') }}</button>
+                    <button type="button" data-controls="next" tabindex="-1" aria-label="next" class="ml-2 flex items-center justify-center w-6 h-6 rounded text-black transition pointer-events-auto bg-grey">{{ function('icon','caret-right') }}</button>
+                </div>
+            </div>
+        {% endif %}        
+        
+        {# Mobile CTA Button #}
+        {% include "_atoms/button.twig" with {
+            link: fields.sectors_button.url,
+            text: fields.sectors_button.title,
+            colour: 'purple',
+            classes: 'mt-2 lg:hidden',
+        } %}
+    </div>
+</section>

@@ -77,6 +77,23 @@ Each repeater item renders a `reviews-card.twig` partial with testimonial data.
 
 ---
 
+### 🎨 Standard Block Settings
+
+This block uses standardized settings for background and corners:
+
+**Fields Required:**
+- `background_colour` (Select/Color)
+- `rounded_top` (Toggle)
+- `rounded_bottom` (Toggle) - Defaults to `true` (rounded bottom)
+
+**Implementation:**
+```twig
+{% import "_atoms/block_settings.twig" as settings %}
+<div class="{{ settings.bg_class(fields.background_colour) }} {{ settings.rounded_classes(fields.rounded_top, fields.rounded_bottom|default(true)) }}">
+```
+
+---
+
 ### 🧱 ACF Setup
 
 - **Location:** Options Page → “Site Options”

@@ -1,0 +1,89 @@
+{% set responsiveButtons = responsiveButtons ?? true %}
+{% set showDefaultButton = showDefaultButton ?? true %}
+
+<div
+	class="call-tag-wrapper{% if not responsiveButtons %} no-responsive-buttons{% endif %}">
+	{# Buttons positioned above when parent width < 620px (shown when .buttons-external class is present) #}
+	{% if buttons %}
+		<div class="flex flex-wrap gap-2 mb-6 call-tag-buttons-external">
+			{% for item in buttons %}
+				{% set link = item.link ?? (item.copy_button ? Post(item.copy_button).link : null) %}
+				{% set text = item.text ?? (item.copy_button ? item.copy_button.post_title : null) %}
+				{% if link and text %}
+					{% include "_components/button.twig" with {
+                        link: link,
+                        text: text,
+                        style: loop.index == 1 ? 'filled-primary-light' : 'filled-secondary',
+                        extraClasses: 'mr-1 xl:mr-2 text-sm',
+                    } only %}
+				{% endif %}
+			{% endfor %}
+		</div>
+	{% elseif showDefaultButton %}
+		<div class="mb-2 call-tag-buttons-external">
+			{% include "_components/button.twig" with {
+                link: '/contact-us/',
+                text: 'Contact Us',
+                style: 'filled-secondary',
+                extraClasses: 'mr-1 xl:mr-2 text-sm',
+            } %}
+		</div>
+	{% endif %}
+
+	<div class="{{ buttons or showDefaultButton ? 'flex' : 'inline-block w-full lg:w-auto min-w-84' }} items-center p-4 text-white bg-gradient-to-b rounded-full call-tag bg-primary-light from-tertiary-light to-tertiary-dark">
+
+		<div class="flex items-center mr-4">
+			<span class="inline-flex justify-center items-center mr-2 w-12 h-12 text-white rounded-full bg-primary-light">{{ function('icon','phone','w-6 h-6') }}</span>
+
+			<div class="phone-item md:block">
+				<span class="">Call
+					{{ function('do_shortcode', '[loc case="title"]') }}
+					on</span>
+				<a href="tel:{{ options.default_phone_number }}">{{ options.default_phone_number }}</a>
+			</div>
+		</div>
+
+		{# Buttons shown inline when parent width >= 620px (hidden when .buttons-external class is present) #}
+		{% if buttons %}
+			<div class="flex flex-wrap gap-2 call-tag-buttons-inline">
+				{% for item in buttons %}
+					{% set link = item.link ?? (item.copy_button ? Post(item.copy_button).link : null) %}
+					{% set text = item.text ?? (item.copy_button ? item.copy_button.post_title : null) %}
+					{% if link and text %}
+						{% include "_components/button.twig" with {
+                            link: link,
+                            text: text,
+                            style: loop.index == 1 ? 'filled-primary-light' : 'filled-secondary',
+                            extraClasses: 'mr-1 xl:mr-2 text-sm',
+                        } only %}
+					{% endif %}
+				{% endfor %}
+			</div>
+		{% elseif showDefaultButton %}
+			<div class="call-tag-buttons-inline">
+				{% include "_components/button.twig" with {
+                    link: 'https://ordersnew.gboxkent.com/',
+                    text: 'Order Online',
+                    style: 'filled-secondary',
+                    extraClasses: 'mr-1 xl:mr-2 text-sm',
+                } %}
+			</div>
+		{% endif %}
+	</div>
+</div>
+<style>
+	/* Hide inline buttons when parent is narrow */
+	.call-tag-wrapper.buttons-external .call-tag-buttons-inline {
+		display: none;
+	}
+
+	/* Hide external buttons when parent is wide */
+	.call-tag-wrapper:not(.buttons-external) .call-tag-buttons-external {
+		display: none;
+	}
+
+	/* Always hide external buttons when responsive behavior is disabled */
+	.call-tag-wrapper.no-responsive-buttons .call-tag-buttons-external {
+		display: none !important;
+	}
+</style>

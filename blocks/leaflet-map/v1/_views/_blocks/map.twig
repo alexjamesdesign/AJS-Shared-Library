@@ -1,0 +1,50 @@
+{#
+  Title: Map
+  Description: Map
+  Category: formatting
+  Icon: location
+  Keywords: map
+  Mode: edit
+  SupportsAlign: center
+  SupportsMode: false
+  SupportsMultiple: false
+#}
+
+
+{# Requires an ACF image field called 'map_background' adding to 'site options' in the ACF options page. #}
+{% if options.map_background %}
+    {% set map_background = options.map_background.url|resize(1920, 1080, 'center')|towebp %}
+    <style>
+        .map-background {
+            background-image: url({{ map_background }});
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+    </style>
+{% endif %}
+
+{# Import settings macros #}
+{% import "_atoms/block_settings.twig" as settings %}
+
+
+                    {% if options.map_ctas %}
+                        <div class="flex flex-wrap ~gap-2/4 items-center mt-10 animate fadeIn delay-1">
+                            {% for cta in options.map_ctas %}
+                                {% include "_atoms/button.twig" with {
+                                    doodleClass: '',
+                                    link: cta.map_cta.url,
+                                    text: cta.map_cta.title,
+                                    colour: loop.index is even ? 'green' : 'dark-green',
+                                    btnClass: 'btn--large',
+                                    icon: 'angle-right',
+                                    iconPosition: 'right',
+                                } %}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>

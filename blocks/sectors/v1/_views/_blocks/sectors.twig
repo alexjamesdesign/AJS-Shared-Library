@@ -1,0 +1,138 @@
+{#
+Title: Sectors
+Description: Sectors
+Category: design
+Icon: category
+Keywords: sectors
+Mode: edit
+SupportsAlign: center
+SupportsMode: false
+SupportsMultiple: true
+#}
+
+{# Import settings macros #}
+{% import "_atoms/block_settings.twig" as settings %}
+
+<section
+  class="relative overflow-hidden flex flex-wrap gap-5 py-12 w-full {{ settings.bg_class(fields.background_colour) }} {{ settings.rounded_classes(fields.rounded_top, fields.rounded_bottom) }}">
+
+  {# Watermark #}
+  {% include "_atoms/watermark.twig" with { fields: fields } %}
+
+  <div class="container relative z-10 flex flex-wrap lg:flex-nowrap fade-in-viewport">
+    {% if fields.sectors_image or fields.sectors_media_type == 'map' %}
+    <div class="{{ fields.sectors_media_type == 'map' ? 'block w-full xl:w-5/12' : 'hidden w-5/12 xl:block' }} py-0 pb-0 lg:py-12 lg:h-full lg:max-h-full lg:pr-9">
+      <div class="sticky">
+        <div class="lg:top-[150px] w-full {{ fields.sectors_media_type == 'map' ? 'h-[300px] lg:h-[550px]' : 'h-96 lg:h-full' }}">
+            {% if fields.sectors_media_type == 'image' or not fields.sectors_media_type %}
+                {# Image #}
+                <div class="block relative w-full h-full">
+                    {% include "_components/picture.twig" with {
+                    source: fields.sectors_image.url,
+                    lazyload: false,
+                    pictureClasses: 'block w-full h-full z-0',
+                    breakpoints: {
+                    "1530px" : {
+                    w: 1200,
+                    h: 1000,
+                    crop: 'center'
+                    },
+                    "1280px" : {
+                    w: 1200,
+                    h: 1100,
+                    crop: 'center'
+                    },
+
+                    "1px" : {
+                    w: 700,
+                    h: 700,
+                    crop: 'center'
+                    },
+                    },
+                    img: {
+                    classes: "w-full h-full rounded-3xl object-center object-cover bg-neutral",
+                    w: 1200,
+                    h: null,
+                    crop: 'center',
+                    alt: fields.sectors_image.alt,
+                    }
+                    } %}
+
+                    {% if fields.sectors_enable_overlay %}
+                    <div class="gradient-overlay absolute inset-0 w-full h-full rounded-3xl"
+                    style="opacity: {{ fields.sectors_overlay_opacity ? fields.sectors_overlay_opacity / 100 : 0.4 }};"></div>
+                    {% endif %}
+                </div>
+            {% elseif fields.sectors_media_type == 'map' %}
+                {# Google Map #}
+                <div class="block pb-6 relative w-full h-full rounded-3xl overflow-hidden bg-neutral">
+                    <iframe
+                        src="https://maps.google.com/maps?q={{ fields.sectors_map_location|url_encode }}&t=m&z=14&output=embed&iwloc=near"
+                        width="100%"
+                        height="100%"
+                        frameborder="0"
+                        style="border:0;border-radius: 30px;"
+                        allowfullscreen=""
+                        aria-hidden="false"
+                        tabindex="0">
+                    </iframe>
+                </div>
+            {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="relative text-primary xl:w-7/12 lg:pl-9">
+      <div class="w-full h-full lg:py-10 copy-primary">
+        <p class="mb-1 text-sm font-bold uppercase text-primary-light">{{ fields.sectors_tagline }}</p>
+        <p class="mb-6 text-4xl font-bold text-primary">{{ fields.sectors_title }}</p>
+
+        {{ fields.copy_block }}
+
+        {% if options.sectors_covered %}
+        <div class="flex flex-wrap gap-4 my-12 w-9/12">
+          {% for sector in options.sectors_covered %}
+          {% if sector.sector_name %}
+          <div class="flex flex-nowrap items-center mr-6">
+            <span class="inline-flex justify-center items-center mr-2 w-12 h-12 text-white rounded-full bg-secondary">{{
+              function('icon','arrow-right','w-6 h-6 text-primary') }}</span>
+            <span class="text-lg">{{ sector.sector_name }}</span>
+          </div>
+          {% endif %}
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if fields.fab_button and fields.fab_button.url %}
+        {# Mobile button - regular style #}
+        <div class="mb-8 lg:hidden">
+          {% include "_components/button.twig" with {
+          link: fields.fab_button.url,
+          text: fields.fab_button.title,
+          target: fields.fab_button.target,
+          style: 'filled-primary-light',
+          extraClasses: ''
+          } %}
+        </div>
+
+        {# Desktop FAB - absolute positioned #}
+        <a href="{{ fields.fab_button.url }}" {% if fields.fab_button.target %}target="{{ fields.fab_button.target }}"
+          {% endif %}
+          class="hidden absolute right-0 bottom-10 flex-col justify-end px-6 py-9 text-white rounded-2xl transition-all duration-300 xl:bottom-12 lg:flex min-h-56 bg-primary-light hover:scale-105 hover:shadow-lg">
+          <span
+            class="inline-flex justify-center items-center mr-2 mb-2 w-12 h-12 text-white rounded-full bg-secondary">{{
+            function('icon','arrow-right','w-6 h-6 text-primary') }}</span>
+          <span class="text-lg font-bold leading-tight text-center">{{ fields.fab_button.title }}</span>
+        </a>
+        {% endif %}
+
+        <div class="pb-12 lg:pb-0">
+          {% include "_components/call-tag.twig" with { showDefaultButton: false } %}
+        </div>
+
+
+      </div>
+    </div>
+  </div>
+</section>

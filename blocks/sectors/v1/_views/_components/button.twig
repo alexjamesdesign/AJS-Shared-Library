@@ -1,0 +1,20 @@
+{% set classes = 'rounded-full font-display font-bold py-2 px-6' %}
+
+{% if style == 'filled-secondary' %}
+    {% set style = 'bg-secondary hover:bg-secondary-dark text-primary border-4 border-secondary hover:border-secondary-dark' %}
+{% elseif style == 'filled-primary-light' %}
+    {% set style = 'bg-primary-light text-white border-4 border-primary-light' %}
+{% elseif style == 'filled-secondary' %}
+    {% set style = 'bg-secondary text-white border-4 border-secondary' %}
+{% elseif style == 'outline-green' %}
+    {% set style = 'bg-none text-primary-light border-4 border-primary-light hover:border-primary' %}
+{% endif %}
+
+<a class="btn transition-all duration-300 ease-out transform group hover:scale-105 hover:-translate-y-0.5 hover:shadow-lg active:scale-95 {{ icon ? 'inline-flex items-center justify-between' : 'inline-block' }} {{classes}} {{extraClasses}} {{style}}" href="{{link}}" aria-label="{{text}}" {{ target ? 'target="' ~ target ~ '"' }} {{ download ? 'download' : '' }}>
+    <span>{{text}}</span>
+    {% if icon %}
+        <span class="inline-flex items-center justify-center ml-2 {{ iconSize|default('w-6 h-6') }}">
+            {{ function('icon', icon, iconClasses|default('w-4 h-4')) }}
+        </span>
+    {% endif %}
+</a>

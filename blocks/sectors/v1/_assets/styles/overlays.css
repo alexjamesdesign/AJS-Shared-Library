@@ -1,0 +1,5 @@
+.gradient-overlay {
+  background: linear-gradient(180deg, #144A69 0%, #99F2BA 100%);
+  opacity: 0.4; /* Fallback/Default */
+  pointer-events: none;
+}

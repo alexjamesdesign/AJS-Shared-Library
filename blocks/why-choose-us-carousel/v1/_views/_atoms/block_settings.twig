@@ -1,0 +1,20 @@
+{#
+Block Settings Macros
+#}
+
+{# Background Colour #}
+{% macro bg_class(colour_key) %}
+{{ colour_key|default('bg-white') }}
+{% endmacro %}
+
+{# Rounded Corners #}
+{% macro rounded_classes(top, bottom) %}
+{% set classes = [] %}
+{% if top %}
+{% set classes = classes|merge(['rounded-t-4xl']) %}
+{% endif %}
+{% if bottom %}
+{% set classes = classes|merge(['rounded-b-4xl']) %}
+{% endif %}
+{{ classes|join(' ') }}
+{% endmacro %}

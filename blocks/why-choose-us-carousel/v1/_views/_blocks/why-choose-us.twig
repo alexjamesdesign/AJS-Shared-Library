@@ -1,0 +1,26 @@
+{#
+  Title: Why Choose Us Carousel
+  Description: Why Choose Us Carousel
+  Category: formatting
+  Icon: grid-view
+  Keywords: why us pages cards carousel
+  Mode: edit
+  SupportsAlign: center
+  SupportsMode: true
+  SupportsMultiple: true
+#}
+
+{# Why Us Carousel #}
+
+{# Import settings macros #}
+{% import "_atoms/block_settings.twig" as settings %}
+
+<div class="py-6 outer-container fade-in-viewport {{ settings.bg_class(fields.background_colour|default('bg-primary')) }} {{ settings.rounded_classes(fields.rounded_top, fields.rounded_bottom) }}">
+
+    <div class="container">
+
+        {% include "_components/why-choose-us.twig" %}
+
+    </div>  
+
+</div>
